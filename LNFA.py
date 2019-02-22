@@ -18,14 +18,13 @@ def delta(stare, litera):
 	return set()
 
 def delta_tilda(stare, cuvant):
+	aux = set()
 	rezultat = set()
 	multime = delta(stare, cuvant[0]) 
 	
 	for stare_lambda in lambda_inchidere(stare):
 		multime = multime | delta(stare_lambda, cuvant[0])
-	# print(multime)
 	
-	aux = set()
 	for element in multime:
 		aux = aux | lambda_inchidere(element)
 	multime = multime | aux
