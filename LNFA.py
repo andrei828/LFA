@@ -1,30 +1,37 @@
 from collections import defaultdict
 
-file = open('NFA.txt', 'r')
-output = open('NFA_result', 'w')
+file = open('LNFA.txt', 'r')
+output = open('LNFA_result', 'w')
 
-def is_in_NFA(stare_i, litera):
-	if not len(NFA[(stare_i, litera)]) is 0:
+def is_in_LNFA(stare_i, litera):
+	if not len(LNFA[(stare_i, litera)]) is 0:
 		return True 
-	del NFA[(stare_i, litera)]
+	del LNFA[(stare_i, litera)]
 	return False
 
+def lambda_inchidere(stare):
+	return delta(stare, '.')
+
 def delta(stare, litera):
-	if is_in_NFA(stare, litera):
-		return NFA[(stare, litera)]
+	if is_in_LNFA(stare, litera):
+		return LNFA[(stare, litera)]
 	return set()
 
 def delta_tilda(stare, cuvant):
-	stari_urmatoare = delta(stare, cuvant[0])
-	
-	if len(cuvant) == 1:
-		return stari_urmatoare
+	multime = {stare}
+	rezultat = set()
 
-	multime = set()
-	for stare_urmatoare in stari_urmatoare:
-		submultime = set(delta_tilda(stare_urmatoare, cuvant[1:]))
-		multime = multime | submultime
-	return multime
+	for stare_lambda in lambda_inchidere(stare):
+		multime = multime | delta(stare_lambda, cuvant[0])
+
+	if len(cuvant) == 1:
+		return multime
+
+	for stare_viitoare in multime:
+		rezultat = rezultat | delta_tilda(stare_viitoare, cuvant[1:])
+
+	print(rezultat)
+	return rezultat
 
 # multimea nodurilor
 numar_stari = int(file.readline().split()[0])
@@ -41,17 +48,16 @@ stare_initala = file.readline().split()[0]
 numar_stari_finale = int(file.readline().split()[0])
 stari_finale = set(file.readline().split())
 
-# implementare NFA
-NFA = defaultdict(set)
+# implementare LNFA
+LNFA = defaultdict(set)
 numar_tranzitii = int(file.readline().split()[0])
 for i in range(numar_tranzitii):
 	tranzitie = file.readline().split()
-	NFA[(tranzitie[0], tranzitie[1])].add(tranzitie[2])
+	LNFA[(tranzitie[0], tranzitie[1])].add(tranzitie[2])
 
 # multimea cuvintelor
 cuvinte = []
 numar_cuvinte = int(file.readline().split()[0])
-print(numar_cuvinte)
 for cuvant in range(numar_cuvinte):
 	cuvant = file.readline().split()[0]
 	if delta_tilda(stare_initala, cuvant) & stari_finale:
