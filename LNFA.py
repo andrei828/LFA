@@ -18,11 +18,17 @@ def delta(stare, litera):
 	return set()
 
 def delta_tilda(stare, cuvant):
-	multime = {stare}
 	rezultat = set()
-
+	multime = delta(stare, cuvant[0]) 
+	
 	for stare_lambda in lambda_inchidere(stare):
 		multime = multime | delta(stare_lambda, cuvant[0])
+	# print(multime)
+	
+	aux = set()
+	for element in multime:
+		aux = aux | lambda_inchidere(element)
+	multime = multime | aux
 
 	if len(cuvant) == 1:
 		return multime
@@ -30,7 +36,6 @@ def delta_tilda(stare, cuvant):
 	for stare_viitoare in multime:
 		rezultat = rezultat | delta_tilda(stare_viitoare, cuvant[1:])
 
-	print(rezultat)
 	return rezultat
 
 # multimea nodurilor
@@ -58,7 +63,7 @@ for i in range(numar_tranzitii):
 # multimea cuvintelor
 cuvinte = []
 numar_cuvinte = int(file.readline().split()[0])
-for cuvant in range(numar_cuvinte):
+for i in range(numar_cuvinte):
 	cuvant = file.readline().split()[0]
 	if delta_tilda(stare_initala, cuvant) & stari_finale:
 		output.write('DA\n')
