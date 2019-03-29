@@ -17,48 +17,31 @@ def delta_tilda(stare, cuvant, DFA):
 # complete function ****
 def este_limbaj_vid(automat, stari_vizitate):
 	if automat.stare_initiala in automat.stari_finale:
-		return True
+		return False
 
-	este_vid = False
-	stari_vizitate[stare_initiala] = True
-	for (stare, litera) in DFA:
-		if  este_vid is False and stare is stare_initiala and stari_vizitate[DFA[(stare, litera)]] is False:
-			este_vid = este_limbaj_vid(DFA[(stare, litera)], DFA, stari_finale, stari_vizitate)
-
-	return este_vid
-
-def este_limbaj_vid(stare_initiala, DFA, stari_finale, stari_vizitate):
-	if stare_initiala in stari_finale:
-		return True
-
-	este_vid = False
-	stari_vizitate[stare_initiala] = True
-	for (stare, litera) in DFA:
-		if  este_vid is False and stare is stare_initiala and stari_vizitate[DFA[(stare, litera)]] is False:
-			este_vid = este_limbaj_vid(DFA[(stare, litera)], DFA, stari_finale, stari_vizitate)
+	este_vid = True
+	stari_vizitate[automat.stare_initiala] = True
+	for (stare, litera) in automat.DFA:
+		if (este_vid is True and stare is automat.stare_initiala 
+			and stari_vizitate[automat.DFA[(stare, litera)]] is False):
+			
+			automat.stare_initiala = automat.DFA[(stare, litera)]
+			este_vid = este_limbaj_vid(automat, stari_vizitate)
 
 	return este_vid
+
+def completare_automat(automat):
+	for stare in automat.stari:
+		for litera in automat.alfabet:
+			automat.DFA[('E', litera)] = 'E'
+			if (stare, litera) not in automat.DFA:
+				automat.DFA[(stare, litera)] = 'E'
 
 def complement(automat):
 	stari_finale = automat.stari - automat.stari_finale
 	return Automat(automat.stari, automat.alfabet, automat.DFA, automat.stare_initiala, stari_finale)
 
 def intersectie(automat_1, automat_2):
-	# completare DFA-uri
-	alfabet = automat_1.alfabet | automat_2.alfabet
-
-	for stare in automat_1.stari:
-		for litera in automat_1.alfabet:
-			automat_1.DFA[('E', litera)] = 'E'
-			if (stare, litera) not in automat_1.DFA:
-				automat_1.DFA[(stare, litera)] = 'E'
-
-	for stare in automat_2.stari:
-		for litera in automat_2.alfabet:
-			automat_2.DFA[('E', litera)] = 'E'
-			if (stare, litera) not in automat_2.DFA:
-				automat_2.DFA[(stare, litera)] = 'E'
-
 	# multimea starilor in intersectie
 	stari_inter = set()
 	for stare_1 in automat_1.stari:
@@ -77,11 +60,30 @@ def intersectie(automat_1, automat_2):
 	# crearea grafului in intersectie
 	DFA_inter = {}
 	for stare_inter in stari_inter:
-		for litera in alfabet:
+		for litera in automat_1.alfabet:
 			DFA_inter[(stare_inter, litera)] = (delta(stare_inter[0], litera, automat_1.DFA), 
 												delta(stare_inter[1], litera, automat_2.DFA))
 
-	return Automat(stari_inter, alfabet, DFA_inter, stare_init_inter, stari_finale_inter)	
+	return Automat(stari_inter, automat_1.alfabet, DFA_inter, stare_init_inter, stari_finale_inter)
+
+def echivalenta(automat_1, automat_2):
+	# completare automate
+	automat_1.alfabet = automat_1.alfabet | automat_2.alfabet
+	automat_2.alfabet = automat_1.alfabet
+	completare_automat(automat_1)
+	completare_automat(automat_2)
+
+	# complementelor automatelor
+	complement_automat_1 = complement(automat_1)
+	complement_automat_2 = complement(automat_2)
+
+	# verificarea limbajului prin intersectia automatelor
+	stari_vizitate1 = {}
+	stari_vizitate2 = {}
+	if (este_limbaj_vid(intersectie(automat_1, complement_automat_2), stari_vizitate1) 
+		and este_limbaj_vid(intersectie(complement_automat_1, automat_2), stari_vizitate2)):
+		return True
+	return False
 
 # deschidere fisier
 file = open('DFA_complement.txt', 'r')
@@ -131,37 +133,14 @@ for i in range(numar_tranzitii_2):
 	tranzitie = file.readline().split()
 	DFA_2[(tranzitie[0], tranzitie[1])] = tranzitie[2]
 
+#inchidere fisiere
+file.close()
+output.close()
+
 automat_1 = Automat(stari_1, alfabet_1, DFA_1, stare_initiala_1, stari_finale_1)
 automat_2 = Automat(stari_2, alfabet_2, DFA_2, stare_initiala_2, stari_finale_2)
 
-#print(este_limbaj_vid(intersectie(complement(automat_1), automat_2)) and este_limbaj_vid(intersectie(automat_1, complement(automat_2))))
-
-
-
-
-
-
-
-
-# # DFS
-# stari_vizitate = {}
-# for stare in stari_inter:
-# 	stari_vizitate[stare] = False
-
-# print(este_limbaj_vid(stare_init_inter, DFA_inter, stari_finale_inter, stari_vizitate))
-
-file.close()
-
-
-
-
-
-
-
-
-
-
-
+print(echivalenta(automat_1, automat_2))
 
 
 
