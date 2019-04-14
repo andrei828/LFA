@@ -1,41 +1,44 @@
 class Automat:
-	def __init__(self, stari, alfabet, DFA, stare_initiala, stari_finale):
-		self.DFA = DFA
-		self.stari = stari
-		self.alfabet = alfabet
-		self.stari_finale = stari_finale
-		self.stare_initiala = stare_initiala
+    def __init__(self, stari, alfabet, DFA, stare_initiala, stari_finale):
+        self.DFA = DFA
+        self.stari = stari
+        self.stari.add(None)
+        self.alfabet = alfabet
+        self.stari_finale = stari_finale
+        self.stare_initiala = stare_initiala
 
 def delta(stare, litera, DFA):
 	return DFA[(stare, litera)]
 
-def delta_tilda(stare, cuvant, DFA):
-	if len(cuvant) == 1:
-		return delta(stare, cuvant[0], DFA)
-	return delta_tilda(delta(stare, cuvant[0]), cuvant[1:], DFA)
+def este_limbaj_vid(automat):
+    stiva = []
+    stari_vizitate = { None: True }
 
-# complete function ****
-def este_limbaj_vid(automat, stari_vizitate):
-	if automat.stare_initiala in automat.stari_finale:
-		return False
+    for stare in automat.stari:
+        stari_vizitate[stare] = False
+    
+    stiva.append(automat.stare_initiala)
 
-	este_vid = True
-	stari_vizitate[automat.stare_initiala] = True
-	for (stare, litera) in automat.DFA:
-		if (este_vid is True and stare is automat.stare_initiala 
-			and stari_vizitate[automat.DFA[(stare, litera)]] is False):
-			
-			automat.stare_initiala = automat.DFA[(stare, litera)]
-			este_vid = este_limbaj_vid(automat, stari_vizitate)
+    while stiva:
+        top = stiva.pop()
 
-	return este_vid
+        if not stari_vizitate[top]:
+            if top in automat.stari_finale:
+                return False
+            stari_vizitate[top] = True
+
+        for litera in automat.alfabet:
+            if not stari_vizitate[automat.DFA[(top, litera)]]:
+                stiva.append(automat.DFA[(top, litera)])
+
+    return True
 
 def completare_automat(automat):
 	for stare in automat.stari:
 		for litera in automat.alfabet:
-			automat.DFA[('E', litera)] = 'E'
+			automat.DFA[(None, litera)] = None
 			if (stare, litera) not in automat.DFA:
-				automat.DFA[(stare, litera)] = 'E'
+				automat.DFA[(stare, litera)] = None
 
 def complement(automat):
 	stari_finale = automat.stari - automat.stari_finale
@@ -67,23 +70,25 @@ def intersectie(automat_1, automat_2):
 	return Automat(stari_inter, automat_1.alfabet, DFA_inter, stare_init_inter, stari_finale_inter)
 
 def echivalenta(automat_1, automat_2):
-	# completare automate
-	automat_1.alfabet = automat_1.alfabet | automat_2.alfabet
-	automat_2.alfabet = automat_1.alfabet
-	completare_automat(automat_1)
-	completare_automat(automat_2)
+    # complementelor automatelor
+    complement_automat_1 = complement(automat_1)
+    complement_automat_2 = complement(automat_2)
 
-	# complementelor automatelor
-	complement_automat_1 = complement(automat_1)
-	complement_automat_2 = complement(automat_2)
-
+    # reuniune alfabet
+    automat_1.alfabet = automat_1.alfabet | automat_2.alfabet
+    automat_2.alfabet = automat_1.alfabet
+    
+    # completare automate
+    completare_automat(automat_1)
+    completare_automat(automat_2)
+    completare_automat(complement_automat_1)
+    completare_automat(complement_automat_2)
+    
 	# verificarea limbajului prin intersectia automatelor
-	stari_vizitate1 = {}
-	stari_vizitate2 = {}
-	if (este_limbaj_vid(intersectie(automat_1, complement_automat_2), stari_vizitate1) 
-		and este_limbaj_vid(intersectie(complement_automat_1, automat_2), stari_vizitate2)):
-		return True
-	return False
+    if (este_limbaj_vid(intersectie(automat_1, complement_automat_2))
+        and este_limbaj_vid(intersectie(complement_automat_1, automat_2))):
+        return True
+    return False
 
 # deschidere fisier
 file = open('DFA_complement.txt', 'r')
