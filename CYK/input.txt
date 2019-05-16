@@ -1,0 +1,13 @@
+cbaedaf
+S A B
+B B C
+B V A
+B b
+C P A
+A D N
+A c
+V b
+P d
+N e
+N f
+D a
