@@ -1,19 +1,32 @@
-def write_non_terminals(matrix, line, col, CFG_help, word):
-	for i in range(line + 1, len(word)):
-		for x, y in zip(matrix[len(word) - i + line][col], matrix[i][col + i - line]):
-			add_element(matrix, x, y, line, col, CFG_help, word, i)
-		
+class Component:
+    def __init__(self, terminal1, line1, col1, terminal2, line2, col2):
+        self.col1 = col1
+        self.col2 = col2
+        self.line1 = line1
+        self.line2 = line2
+        self.terminal1 = terminal1
+        self.terminal2 = terminal2
+
 def add_element(matrix, tuple1, tuple2, line, col, CFG_help, word, i):
 	if tuple1[0]+tuple2[0] in CFG_help:
 		for element in CFG_help[tuple1[0] + tuple2[0]]:
 			matrix[line][col].add((
-					element, len(word) - i + line, 
-					col, i, col + i - line))
+					element, tuple1[0], len(word) - i + line, 
+					col, tuple2[0], i, col + i - line))
+
+def write_non_terminals(matrix, line, col, CFG_help, word):
+	for i in range(line + 1, len(word)):
+		for x in matrix[len(word) - i + line][col]:
+			for y in matrix[i][col + i - line]:
+				add_element(matrix, x, y, line, col, CFG_help, word, i)
+			
 
 def cyk(matrix, CFG, CFG_help, word):
 	for col in range(len(word)):
 		for element in CFG_help[word[col]]:
-			matrix[len(word)-1][col].add((element, 0, 0, 0, 0))
+			matrix[len(word)-1][col].add((
+				element, word[col], len(word) - 1,
+			 	col, word[col], len(word) - 1, 0))
 
 	for line in range(len(word) - 2, -1, -1):
 		for col in range(line + 1):
@@ -41,11 +54,13 @@ for relation in text_file[1:]:
 	CFG_help[terminal_string].append(rel[0])
 
 curr_col_size = len(word)
-matrix = [[set()  for i in range(0, j + 1)]for j in range(curr_col_size)]
+matrix = [[set()  for i in range(0, j + 1)] for j in range(curr_col_size)]
+
 cyk(matrix, CFG, CFG_help, word)
 
 for i in matrix:
 	print([j for j in i])
+
 	
 
 
