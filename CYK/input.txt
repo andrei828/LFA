@@ -1,0 +1,12 @@
+acabacab
+S S S
+S A B
+S A C
+S D E
+S D F
+C S B
+F S E
+A a
+B b
+C c
+D d

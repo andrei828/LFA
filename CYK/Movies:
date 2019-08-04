@@ -1,0 +1,22 @@
+Movies:
+	Name
+	Category
+	Duration
+	Personnel_list
+
+Personnel:
+	name
+	cnp
+	movie_name
+
+Regizor: Personnel
+	filme regizate
+	const incasari_bonus
+
+Actor: Personnel
+	filme jucate: (nume_film, rol)
+	incasari_bonus
+
+
+ActorRegizor : Actor, Regizor
+
