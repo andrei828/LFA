@@ -2,7 +2,7 @@ import azure.cosmos.cosmos_client as cosmos_client
 
 config = {
     'ENDPOINT': 'https://testing-cosmosdb.documents.azure.com:443/',
-    'PRIMARYKEY': 'cBq357xNNkAPREfczWrL9Jlq5ZmL4uuNC9bg1zn6Z15mQ5EP1SCZBg0lXXotAvaczuZhzzwwecEpkHCy0ZeOtQ==',
+    'PRIMARYKEY': 'KEY',
     'DATABASE': 'service',
     'CONTAINER': 'UsersContainer'
 }
