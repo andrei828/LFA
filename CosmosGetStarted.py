@@ -2,9 +2,14 @@ import azure.cosmos.cosmos_client as cosmos_client
 
 config = {
     'ENDPOINT': 'https://testing-cosmosdb.documents.azure.com:443/',
-    'PRIMARYKEY': '[PRIMARYKEY]',
+    'PRIMARYKEY': 'KEY',
     'DATABASE': 'service',
     'CONTAINER': 'UsersContainer'
+}
+
+enviroment = {
+	'DATABASE_LINK': 'dbs/service',
+	'CONTAINER_LINK': 'dbs/service/colls/UsersContainer'
 }
 
 # Initialize the Cosmos client
@@ -14,7 +19,7 @@ client = cosmos_client.CosmosClient(url_connection=config['ENDPOINT'], auth={
 # Create a database
 #db = client.CreateDatabase({'id': config['DATABASE']})
 
-# Create container options
+# Create container options  
 options = {
     'offerThroughput': 400
 }
@@ -26,24 +31,18 @@ container_definition = {
 # Create a container
 # container = client.CreateContainer(config['DATABASE'], container_definition, options)
 
-# # Create and add some items to the container
-# item1 = client.CreateItem(container['_self'], {
-#     'id': 'server1',
-#     'Web Site': 0,
-#     'Cloud Service': 0,
-#     'Virtual Machine': 0,
-#     'message': 'Hello World from Server 1!'
-#     }
-# )
+# Create and add some items to the container
+item1 = client.CreateItem(enviroment['CONTAINER_LINK'], {
+    'id': '2',
+    'name': 'Liviu Ungureanu',
+    'age': 20,
+    'Web Site': 0,
+    'Cloud Service': 0,
+    'Virtual Machine': 0,
+    'message': 'Hello World from Server 1!'
+    }
+)
 
-# item2 = client.CreateItem(container['_self'], {
-#     'id': 'server2',
-#     'Web Site': 1,
-#     'Cloud Service': 0,
-#     'Virtual Machine': 0,
-#     'message': 'Hello World from Server 2!'
-#     }
-# )
 
 # Query these items in SQL
 query = {'query': 'SELECT * FROM c'}
@@ -52,6 +51,9 @@ options = {}
 options['enableCrossPartitionQuery'] = True
 options['maxItemCount'] = 2
 
-result_iterable = client.QueryItems('dbsservice', query, options)
+result_iterable = client.QueryItems(enviroment['CONTAINER_LINK'], query, options)
 for item in iter(result_iterable):
-    print(item['id'])
+    print("id:", item["id"])
+    print("name:", item["name"])
+    print("age:", item["age"])
+    print()
