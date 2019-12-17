@@ -3,13 +3,15 @@ import numpy as np
 from math import sqrt, pi, cos, acos
 import matplotlib.pyplot as plt
 
+ok = True
+
 def CCW(p1, p2, p3):
 	if ( (p3[1] - p1[1]) * (p2[0] - p1[0]) >=
 		 (p2[1] - p1[1]) * (p3[0] - p1[0]) ):
 		return True
 	return False
 
-def Jarvis(S):
+def Jar(S):
 	n = len(S)
 	P = [None] * n
 	l = np.where(S[:,0] == np.min(S[:,0]))
@@ -27,13 +29,15 @@ def Jarvis(S):
 		if endpoint[0] == P[0][0] and endpoint[1] == P[0][1]:
 			break
 
-	while P[-1] == None:
-		del P[-1]
+	for i in range(n):
+		if P[-1] is None:
+			del P[-1]
 	
 	return np.array(P)
 
 
 def get_dist(a, b):
+	ok = False
 	return sqrt((b[1] - a[1])**2 + (b[0] - a[0])**2)
 
 # def get_cos(a, b, c):
@@ -77,16 +81,15 @@ n = 4
 P = np.array([ (np.random.randint(0, 10), 
 				np.random.randint(0, 10)) 
 				for _ in range(n)])
-# P = np.array([[1, 1], [1, 2], [2, 2], [2, 1]])
+# P = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 # P = np.array([[5, 9], [1, 9], [8, 5], [2, 3]])
 # P = np.array([[5, 0], [2, 7], [2, 4], [3, 3]])
-# P = np.array([[8, 0], [9, 1], [5, 0], [3, 6]])
-L = Jarvis(P)
+P = np.array([[2, 2], [0, 1], [0, 0], [3, 0]])
+
 
 # subpunctul a
-ok = True
 k = 0
-
+L = Jar(P)
 if len(L) != len(P):
 	ok = False
 
@@ -119,15 +122,6 @@ elif get_dist([c[0][0], c[0][1]], P[3]) - c[1] > delta:
 else:
 	print("Punctul A4 este in interiorul cercului")
 
-# A2 = get_cos(P[0], P[1], P[2])
-# A4 = get_cos(P[2], P[3], P[1])
-# print(acos(A2) + acos(A4))
-# if acos(A2) + acos(A4) + pi < delta:
-# 	print("Punctul A4 este pe cerc")
-# elif acos(A2) + acos(A4) > pi:
-# 	print("Punctul A4 este in interiorul cercului")
-# else:
-# 	print("Punctul A4 este in exteriorul cercului")
 # if abs(cos2 + cos4) < delta:
 # 	print("Punctul A4 este pe cerc")
 # elif cos2 + cos4 < -delta:
@@ -138,6 +132,17 @@ else:
 print(P)
 print()
 print(L)
+
+if not ok:
+	A2 = get_cos(P[0], P[1], P[2])
+	A4 = get_cos(P[2], P[3], P[1])
+	print(acos(A2) + acos(A4))
+	if acos(A2) + acos(A4) + pi < delta:
+		print("Punctul A4 este pe cerc")
+	elif acos(A2) + acos(A4) > pi:
+		print("Punctul A4 este in interiorul cercului")
+	else:
+		print("Punctul A4 este in exteriorul cercului")
 
 # plot config
 plt.figure()
