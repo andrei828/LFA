@@ -1,5 +1,5 @@
 
-n = 10
+n = 200
 result = [0]*1000
 
 def is_prime(number):
@@ -14,7 +14,6 @@ def is_prime(number):
 	return True
 
 def split_bt(number, k):
-
 	if number == 0:
 		for element in result[1:]:
 			if element == 0:
