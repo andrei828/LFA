@@ -1,0 +1,19 @@
+5
+1 2 3 4 5 
+3
+a b c
+3
+x y z
+3
+A B C Z
+1
+2
+3 4 5
+4
+1 a x Z 2 A
+1 a y Z 3 B
+2 b z A 3 .
+3 b . B 3 .
+2
+ab
+xxx
