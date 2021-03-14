@@ -9,11 +9,14 @@ A B C Z
 1
 2
 3 4 5
-4
+6
 1 a x Z 2 A
 1 a y Z 3 B
 2 b z A 3 .
 3 b . B 3 .
-2
+1 . . Z 4 .
+4 a a Z 4 A
+3
 ab
 xxx
+a
