@@ -43,12 +43,18 @@ build result = set({(stare, stiva, iesire)})
 '''
 def delta(stare, litera, stiva, iesire):
 	result = set()
+	# if stare == '2':
+	print('am', litera, stiva, iesire)
+
+	# 	print(stare, litera, stiva[-1], este_in_Translator(stare, litera, stiva[-1]))
 	if este_in_Translator(stare, litera, stiva[-1]):
+		# if stare == '2':
+		# 	print(stare, litera, stiva[-1], este_in_Translator(stare, litera, stiva[-1]))
 		NODE, NEW_TOP_STACK, NEW_OUTPUT = 0, 1, 2
 
 		# starile cu legaturi la starea curenta
 		stari = Translator[(stare, litera, stiva[-1])]
-
+		
 		# verificam daca 'Z' este varful stivei
 		noua_stiva = stiva[:] if stiva[-1] == 'Z' else stiva[:-1]
 
@@ -59,7 +65,7 @@ def delta(stare, litera, stiva, iesire):
 				noua_stiva + lambda_handler(stare[NEW_TOP_STACK]),
 				iesire[:] + lambda_handler(stare[NEW_OUTPUT])
 			))
-			
+	# print('--', result)
 	return result
 
 def delta_tilda(stare, cuvant, stiva, iesire):
@@ -68,17 +74,25 @@ def delta_tilda(stare, cuvant, stiva, iesire):
 
 	# starile obtinue de la prima litera din input
 	multime = delta(stare, cuvant[0], stiva, iesire) 
-
-	# calculam delta si pentru lambda inchiderea primei stari
-	for stare_lambda in lambda_inchidere(stare, stiva, iesire):
-		multime = multime | delta(stare_lambda[NODE], cuvant[0], stare_lambda[STACK], stare_lambda[OUTPUT])
 	
-	# calculam lambda inchiderea de la fiecare stare
-	# obtinuta dupa parsarea primei litere din input
-	for element in multime:
-		aux = aux | lambda_inchidere(element[NODE], element[STACK], element[OUTPUT])
-	multime = multime | aux
+	lungime_multime = len(multime)
 
+	while True:
+		# calculam delta si pentru lambda inchiderea primei stari
+		for stare_lambda in lambda_inchidere(stare, stiva, iesire):
+			# print(delta(stare_lambda[NODE], cuvant[0], stare_lambda[STACK], stare_lambda[OUTPUT]))
+			multime = multime | delta(stare_lambda[NODE], cuvant[0], stare_lambda[STACK], stare_lambda[OUTPUT])
+		
+		# calculam lambda inchiderea de la fiecare stare
+		# obtinuta dupa parsarea primei litere din input
+		for element in multime:
+			aux = aux | lambda_inchidere(element[NODE], element[STACK], element[OUTPUT])
+		multime = multime | aux
+		print(multime)
+
+		if len(multime) == lungime_multime:
+			break
+		lungime_multime = len(multime)		
 	# daca cuvantul are doar 
 	# o litera returnam setul
 	if len(cuvant) == 1:
@@ -90,7 +104,7 @@ def delta_tilda(stare, cuvant, stiva, iesire):
 	# in mod recursiv
 	for stare_viitoare in multime:
 		rezultat = rezultat | delta_tilda(stare_viitoare[NODE], cuvant[1:], stare_viitoare[STACK], stare_viitoare[OUTPUT])
-
+	print('rez', rezultat)
 	return rezultat
 
 
@@ -133,12 +147,6 @@ for _ in range(numar_cuvinte):
 	cuvant = file.readline().split()[0]
 	stari_output = delta_tilda(stare_initala, cuvant, ('Z'), (''))
 	print([stare[OUTPUT] for stare in stari_output if stare[NODE] in stari_finale and stare[STACK][-1] == 'Z'])
-	
-
-	# if delta_tilda(stare_initala, cuvant) & stari_finale:
-	# 	output.write('DA\n')
-	# else:
-	# 	output.write('NU\n')
 
 file.close()
 output.close()
