@@ -11,13 +11,13 @@ a b S
 3 4 5
 7
 1 . . Z 2 S
-2 . 1 S 2 SbSa
-2 . 2 S 2 SaSb
+2 . 1 S 2 aSbS
+2 . 2 S 2 bSaS
 2 . 3 S 2 .
 2 a . a 2 .
 2 b . b 2 .
 2 . . Z 3 .
-7
+8
 a
 aabb
 abbbaa
@@ -25,3 +25,4 @@ bbaa
 abab
 aab
 baba
+babbaaba

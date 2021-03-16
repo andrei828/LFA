@@ -53,20 +53,20 @@ build result = set({(stare, stiva, iesire)})
 def delta(stare, litera, stiva, iesire):
 	result = set()
 
-	if este_in_Translator(stare, litera, stiva[-1]):
+	if este_in_Translator(stare, litera, stiva[0]):
 		NODE, NEW_TOP_STACK, NEW_OUTPUT = 0, 1, 2
 
 		# starile cu legaturi la starea curenta
-		stari = Translator[(stare, litera, stiva[-1])]
+		stari = Translator[(stare, litera, stiva[0])]
 		
 		# verificam daca 'Z' este varful stivei
-		noua_stiva = stiva[:] if stiva[-1] == 'Z' else stiva[:-1]
+		noua_stiva = stiva[:] if stiva[0] == 'Z' else stiva[1:]
 
 		# construim noile stari
 		for stare in stari:
 			result.add((
 				stare[NODE], 
-				noua_stiva + lambda_handler(stare[NEW_TOP_STACK]),
+				lambda_handler(stare[NEW_TOP_STACK]) + noua_stiva,
 				iesire[:] + lambda_handler(stare[NEW_OUTPUT])
 			))
 
